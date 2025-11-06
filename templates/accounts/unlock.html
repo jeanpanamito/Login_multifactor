@@ -1,0 +1,12 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Desbloqueo{% endblock %}
+{% block content %}
+<h1>Desbloqueo de cuenta</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enviar / Verificar</button>
+</form>
+{% endblock %}
+
+

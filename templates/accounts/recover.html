@@ -1,0 +1,14 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Recuperar{% endblock %}
+{% block content %}
+<h1>Recuperar usuario/contraseña</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enviar</button>
+    <p>Se enviará tu usuario y un mensaje de restablecimiento al correo.</p>
+    <p>Para un flujo completo de restablecimiento, se puede integrar PasswordReset de Django.</p>
+</form>
+{% endblock %}
+
+

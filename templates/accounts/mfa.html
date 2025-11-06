@@ -1,0 +1,22 @@
+{% extends 'accounts/base.html' %}
+{% block title %}MFA{% endblock %}
+{% block content %}
+<h1>Segundo factor</h1>
+<p>Usuario: {{ user_obj.username }} (método: {{ user_obj.get_mfa_method_display }})</p>
+<form method="post">
+    {% csrf_token %}
+    {% if user_obj.mfa_method == 'secq' %}
+        <p><strong>Pregunta:</strong> {{ user_obj.security_question.question }}</p>
+        <p><label>Respuesta</label> {{ form.answer }}</p>
+    {% elif user_obj.mfa_method in ('email','sms') %}
+        <p><label>Código</label> {{ form.code }}</p>
+    {% elif user_obj.mfa_method == 'totp' %}
+        <p>Abra su app de autenticación (Google Authenticator/Authy) y escriba el código de 6 dígitos.</p>
+        <p><label>Código</label> {{ form.code }}</p>
+    {% endif %}
+    <button type="submit">Verificar</button>
+    <p>El código expira en 10 minutos.</p>
+</form>
+{% endblock %}
+
+

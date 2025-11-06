@@ -1,0 +1,17 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<h1>Login</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Continuar</button>
+    <p><a href="{% url 'unlock' %}">Desbloquear cuenta</a> · <a href="{% url 'recover' %}">¿Olvidaste tu usuario/contraseña?</a></p>
+    <p><a href="{% url 'register' %}">Crear cuenta</a></p>
+{% if request.user.is_authenticated %}
+    <p>Ya estás autenticado, continúa con MFA.</p>
+{% endif %}
+</form>
+{% endblock %}
+
+
