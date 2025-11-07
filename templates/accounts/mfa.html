@@ -1,22 +1,52 @@
 {% extends 'accounts/base.html' %}
 {% block title %}MFA{% endblock %}
 {% block content %}
-<h1>Segundo factor</h1>
-<p>Usuario: {{ user_obj.username }} (método: {{ user_obj.get_mfa_method_display }})</p>
+<h1>Segundo factor de autenticación</h1>
+<p>Usuario: {{ user_obj.username }}</p>
+
+{% if mfa_method %}
+    <p>Método: {{ mfa_method.get_method_type_display }}</p>
+{% else %}
+    <p>Método: {{ user_obj.get_mfa_method_display }}</p>
+{% endif %}
+
 <form method="post">
     {% csrf_token %}
-    {% if user_obj.mfa_method == 'secq' %}
-        <p><strong>Pregunta:</strong> {{ user_obj.security_question.question }}</p>
-        <p><label>Respuesta</label> {{ form.answer }}</p>
-    {% elif user_obj.mfa_method in ('email','sms') %}
-        <p><label>Código</label> {{ form.code }}</p>
-    {% elif user_obj.mfa_method == 'totp' %}
-        <p>Abra su app de autenticación (Google Authenticator/Authy) y escriba el código de 6 dígitos.</p>
-        <p><label>Código</label> {{ form.code }}</p>
+    
+    {% if mfa_method %}
+        {% if mfa_method.method_type == 'SECURITY_QUESTIONS' %}
+            {% if mfa_method.security_question %}
+                <p><strong>Pregunta:</strong> {{ mfa_method.security_question.question }}</p>
+                <p><label>Respuesta:</label> {{ form.answer }}</p>
+            {% else %}
+                <p>No hay pregunta de seguridad configurada.</p>
+            {% endif %}
+        {% elif mfa_method.method_type == 'EMAIL' or mfa_method.method_type == 'SMS' %}
+            <p>Ingresa el código que se envió a tu {% if mfa_method.method_type == 'EMAIL' %}correo{% else %}celular{% endif %}.</p>
+            <p><label>Código:</label> {{ form.code }}</p>
+        {% elif mfa_method.method_type == 'TOTP' %}
+            <p>Abra su app de autenticación (Google Authenticator/Authy) y escriba el código de 6 dígitos.</p>
+            <p><label>Código:</label> {{ form.code }}</p>
+        {% elif mfa_method.method_type == 'USB_KEY' %}
+            <p>Conecte su llave USB (YubiKey) y presione el botón.</p>
+            <p><label>Token:</label> {{ form.code }}</p>
+        {% endif %}
+    {% else %}
+        {# Fallback al método antiguo #}
+        {% if user_obj.mfa_method == 'secq' %}
+            {% if user_obj.security_question %}
+                <p><strong>Pregunta:</strong> {{ user_obj.security_question.question }}</p>
+                <p><label>Respuesta:</label> {{ form.answer }}</p>
+            {% endif %}
+        {% elif user_obj.mfa_method in 'email,sms' %}
+            <p><label>Código:</label> {{ form.code }}</p>
+        {% elif user_obj.mfa_method == 'totp' %}
+            <p>Abra su app de autenticación y escriba el código de 6 dígitos.</p>
+            <p><label>Código:</label> {{ form.code }}</p>
+        {% endif %}
     {% endif %}
+    
     <button type="submit">Verificar</button>
     <p>El código expira en 10 minutos.</p>
 </form>
 {% endblock %}
-
-

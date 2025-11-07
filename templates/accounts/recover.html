@@ -2,13 +2,34 @@
 {% block title %}Recuperar{% endblock %}
 {% block content %}
 <h1>Recuperar usuario/contraseña</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Enviar</button>
-    <p>Se enviará tu usuario y un mensaje de restablecimiento al correo.</p>
-    <p>Para un flujo completo de restablecimiento, se puede integrar PasswordReset de Django.</p>
-</form>
+
+{% if show_reset_form %}
+    <h2>Restablecer contraseña</h2>
+    <p>Ingresa el código que se envió a tu correo y tu nueva contraseña.</p>
+    <form method="post" action="{% url 'recover_reset' %}">
+        {% csrf_token %}
+        <p>
+            <label>Código de recuperación:</label>
+            <input type="text" name="code" maxlength="6" required>
+        </p>
+        <p>
+            <label>Nueva contraseña:</label>
+            <input type="password" name="new_password" required>
+        </p>
+        <p>
+            <label>Confirmar contraseña:</label>
+            <input type="password" name="confirm_password" required>
+        </p>
+        <button type="submit">Restablecer contraseña</button>
+    </form>
+{% else %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Enviar código de recuperación</button>
+        <p>Se enviará un código de recuperación a tu correo electrónico.</p>
+    </form>
+{% endif %}
+
+<p><a href="{% url 'login' %}">Volver al login</a></p>
 {% endblock %}
-
-

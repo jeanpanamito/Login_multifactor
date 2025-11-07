@@ -1,0 +1,6 @@
+Django==5.2.7
+djangorestframework
+django-axes
+django-otp
+qrcode[pil]
+
